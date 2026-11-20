@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#F5F5F0">
+    <title>Cuánto tengo, cuánto pago</title>
+    <link rel="icon" type="image/png" href="utils/icono.png">
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilos.css">
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+<!-- Iconos (se usan con <use href="#nombre">) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+        <symbol id="cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="cart" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11h10.2L20 8H6.2"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></symbol>
+        <symbol id="users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-5.5 6-5.5s6 2 6 5.5"/><circle cx="17" cy="9" r="2.4"/><path d="M17 14.5c2.5 0 4 1.6 4 4.5"/></symbol>
+        <symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+        <symbol id="spk" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></symbol>
+        <symbol id="check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></symbol>
+        <symbol id="info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 11v6M12 7.5v.1"/></symbol>
+        <symbol id="left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+        <symbol id="right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+        <symbol id="undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+        <symbol id="pill" viewBox="0 0 24 24"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-40 12 12)"/><path d="M9.2 9.2l5.6 5.6"/></symbol>
+        <symbol id="cross" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></symbol>
+        <symbol id="drop" viewBox="0 0 24 24"><path d="M12 3c3.5 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2.5-6 6-10z"/></symbol>
+        <symbol id="tag" viewBox="0 0 24 24"><path d="M3 3h8l10 10-8 8L3 11V3z"/><circle cx="7.5" cy="7.5" r="1.2"/></symbol>
+        <symbol id="home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
+        <symbol id="mute" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></symbol>
+        <symbol id="minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+        <symbol id="phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+        <symbol id="cam" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol></defs>
+    </svg>
+
+    <div class="app">
+        <header>
+            <img class="logo" alt="" src="utils/logo.png">
+            <div>
+                <h1>
+                    Cuánto tengo, cuánto pago
+                </h1>
+                <small>
+                    Calculadora de dinero accesible
+                </small>
+            </div>
+            <button class="gear" id="bIni" aria-label="Ir al inicio">
+                <svg class="ic">
+                    <use href="#home"/>
+                </svg>
+                <span>
+                    Inicio
+                </span>
+            </button>
+            <button class="gear" id="bAj" aria-label="Ajustes y accesibilidad">
+                <svg class="ic">
+                    <use href="#gear"/>
+                </svg>
+                <span>
+                    Ajustes
+                </span>
+            </button>
+        </header>
+        <main>
+            <!-- INICIO -->
+            <section class="pan on" id="p-ini">
+                <h2>
+                    ¿Qué quieres hacer?
+                </h2>
+                <div class="vozsel" role="group" aria-label="Cómo quieres usar la app">
+                    <button id="vCon" aria-pressed="true">
+                        <svg class="ic">
+                            <use href="#spk"/>
+                        </svg>
+                        Con voz
+                    </button>
+                    <button id="vSin" aria-pressed="false">
+                        <svg class="ic">
+                            <use href="#mute"/>
+                        </svg>
+                        Sin voz
+                    </button>
+                </div>
+                <button class="hcard" id="hCalc">
+                    <img src="utils/inicio.svg" alt="">
+                    <b>
+                        1. Calculadora Completa (Tengo/Pago)
+                    </b>
+                    <span>
+                        Cuento qué dinero tengo y elijo qué compro.
+                    </span>
+                </button>
+                <button class="lnk" data-ir="p-fam">
+                    Ir a Zona Familiar (solo cuidadores)
+                </button>
+            </section>
+
+            <!-- PASO 1: MI DINERO -->
+            <section class="pan" id="p-con">
+                <p class="paso">
+                    Paso 1 de 3
+                </p>
+                <div class="barra">
+                    <i class="f"></i><i></i><i></i>
+                </div>
+                <h2>
+                    Toca el dinero que llevas
+                </h2>
+                <div class="box sand">
+                    <small>
+                        Tienes ahora
+                    </small>
+                    <div class="cifra" id="tDin" role="status" aria-live="polite">
+                        0,00 €
+                    </div>
+                </div>
+                <div class="seg" id="sM">
+                    <button data-m="uno" aria-pressed="true">
+                        De uno en uno
+                    </button>
+                    <button data-m="cant" aria-pressed="false">
+                        Elegir cuántos
+                    </button>
+                </div>
+                <p class="lab">
+                    Billetes
+                </p>
+                <div class="fila" id="gB"></div>
+                <p class="lab">
+                    Monedas
+                </p>
+                <div class="fila" id="gM"></div>
+                <div class="fila">
+                    <button class="btn" id="bUndo">
+                        <svg class="ic"><use href="#minus"/></svg>
+                        Quitar el último
+                    </button>
+                    <button class="btn" id="bVac">
+                        Borrar todo y volver a empezar
+                    </button>
+                </div>
+                <button class="btn p w" data-ir="p-com">
+                    Continuar
+                </button>
+                <button class="btn w" data-ir="p-ini">
+                    <svg class="ic">
+                        <use href="#left"/>
+                    </svg>
+                    Inicio
+                </button>
+            </section>
+
+            <!-- PASO 2: MI COMPRA -->
+            <section class="pan" id="p-com">
+                <p class="paso">
+                    Paso 2 de 3
+                </p>
+                <div class="barra">
+                    <i class="f"></i><i class="f"></i><i></i>
+                </div>
+                <h2>
+                    ¿Qué vas a comprar?
+                </h2>
+                <p class="mu">
+                    Toca + en cada producto.
+                </p>
+                <div class="col" id="lP"></div>
+                <button class="btn w" id="bFoto">
+                    <svg class="ic"><use href="#cam"/></svg>
+                    Hacer foto al precio
+                </button>
+                <input type="file" id="fFoto" accept="image/*" capture="environment" hidden>
+                <div class="box" id="foto" hidden>
+                    <img id="fImg" alt="Foto del precio">
+                    <p class="mu" id="fMsg"></p>
+                    <div class="chips" id="fOpc"></div>
+                </div>
+                <div class="box">
+                    <label for="lib">
+                        <small>
+                            Otra cantidad (opcional)
+                        </small>
+                    </label>
+                    <input id="lib" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0,00">
+                </div>
+                <div class="tiene">
+                    <span>
+                        Tienes
+                    </span>
+                    <b id="tTiene" aria-live="polite">
+                        0,00 €
+                    </b>
+                </div>
+                <div class="tot">
+                    <span>
+                        Total de la compra
+                    </span>
+                    <b id="tCom" aria-live="polite">
+                        0,00 €
+                    </b>
+                </div>
+                <div class="fila">
+                    <button class="btn" data-ir="p-con">
+                        <svg class="ic">
+                            <use href="#left"/>
+                        </svg>
+                        Mi dinero
+                    </button>
+                    <button class="btn p" id="bCom">
+                        Comprobar
+                    </button>
+                </div>
+            </section>
+
+            <!-- PASO 3: RESULTADO -->
+            <section class="pan" id="p-res">
+                <p class="paso">
+                    Paso 3 de 3
+                </p>
+                <div class="barra">
+                    <i class="f"></i><i class="f"></i><i class="f"></i>
+                </div>
+                <h2>
+                    Resultado
+                </h2>
+                <div class="res" id="res" role="status" aria-live="assertive">
+                    <svg class="ic" id="rIc">
+                        <use href="#check"/>
+                    </svg>
+                    <h3 id="rT"></h3>
+                    <p id="rD"></p>
+                    <div class="chips" id="rC"></div>
+                </div>
+
+                <div class="box">
+                    <div class="lin">
+                        <span>
+                            Tu compra cuesta
+                        </span>
+                        <b id="rCo"></b>
+                    </div>
+                    <div class="lin t">
+                        <span>
+                            Tú tienes
+                        </span>
+                        <b id="rTi"></b>
+                    </div>
+                </div>
+                <button class="btn w" id="bEsc">
+                    <svg class="ic">
+                        <use href="#spk"/>
+                    </svg>
+                    Escuchar otra vez
+                </button>
+                <div class="fila">
+                    <button class="btn" data-ir="p-com">
+                        <svg class="ic">
+                            <use href="#left"/>
+                        </svg>
+                        Cambiar la compra
+                    </button>
+                    <button class="btn p" id="bNew">
+                        Borrar todo y volver a empezar
+                    </button>
+                </div>
+            </section>
+
+            <!-- ZONA FAMILIAR -->
+            <section class="pan" id="p-fam">
+                <h2>
+                    Zona familiar
+                </h2>
+                <p class="mu">
+                    Añade o cambia los productos. Se guardan en este dispositivo. Pictogramas: <a href="https://arasaac.org/pictograms/search" target="_blank" rel="noopener">buscar en ARASAAC</a> (autor Sergio Palao, Gobierno de Aragón, CC BY-NC-SA).
+                </p>
+                <div class="box col">
+                    <b>
+                        Contacto SOS
+                    </b>
+                    <small>
+                        Número al que llama el botón SOS.
+                    </small>
+                    <div class="sosed">
+                        <input type="text" id="sNom" aria-label="Nombre del familiar" placeholder="Nombre (ej. Mamá)">
+                        <input type="tel" id="sTel" inputmode="tel" aria-label="Teléfono del familiar" placeholder="Teléfono">
+                    </div>
+                </div>
+                <div class="col" id="lE"></div>
+                <button class="btn w" id="bAdd">
+                    Añadir producto
+                </button>
+                <button class="btn w" data-ir="p-ini">
+                    <svg class="ic"><use href="#left"/></svg>
+                    Inicio
+                </button>
+            </section>
+
+            <!-- AJUSTES -->
+            <section class="pan" id="p-aj">
+                <h2>
+                    Accesibilidad
+                </h2>
+                <div class="aj">
+                    <span>
+                        Voz al tocar
+                    </span>
+                    <button class="sw" id="sV" role="switch" aria-label="Voz al tocar"></button>
+                </div>
+                <div class="aj">
+                    <span>
+                        Alto contraste
+                    </span>
+                    <button class="sw" id="sC" role="switch" aria-label="Alto contraste"></button>
+                </div>
+                <div class="aj c">
+                    <span>
+                        Tipo de voz
+                    </span>
+                    <div class="seg" id="sG">
+                        <button data-g="f">
+                            Femenina
+                        </button>
+                        <button data-g="m">
+                            Masculina
+                        </button>
+                    </div>
+                </div>
+                <div class="aj c">
+                    <span>
+                        Tamaño del texto
+                    </span>
+                    <div class="seg" id="sT">
+                        <button data-v="normal">
+                            Normal
+                        </button>
+                        <button data-v="grande">
+                            Grande
+                        </button>
+                        <button data-v="muy">
+                            Muy grande
+                        </button>
+                    </div>
+                </div>
+                <button class="btn w" data-ir="p-ini">
+                    <svg class="ic">
+                        <use href="#left"/>
+                    </svg>
+                    Inicio
+                </button>
+            </section>
+        </main>
+    </div>
+
+<!-- SOS y ventanas -->
+    <button class="sos" id="bSos" aria-label="SOS: llamar a un familiar">
+        <svg class="ic">
+            <use href="#phone"/></svg>
+            <span>
+                SOS
+            </span>
+    </button>
+    <dialog id="dSos">
+        <h3 id="sosT"></h3>
+        <p id="sosP" class="mu"></p>
+        <a class="btn p w" id="sosLl" href="#">
+            <svg class="ic">
+                <use href="#phone"/>
+            </svg>
+            <span>
+                Llamar
+            </span>
+        </a>
+        <button class="btn w" id="sosFam" hidden>
+            Añadir un número en Zona familiar
+        </button>
+        <button class="btn w" id="sosC">
+            Cancelar
+        </button>
+    </dialog>
+    <dialog id="dlg">
+        <h3 id="dT"></h3>
+        <div id="dG"></div>
+        <button class="btn w" id="dC">
+            Cancelar
+        </button>
+    </dialog>
+    <p class="vh" id="anu" aria-live="polite"></p>
+</body>
+</html>
